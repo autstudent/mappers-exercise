@@ -1,103 +1,76 @@
 /* eslint no-restricted-globals: 'off' */
 
 // Iteración 1
-const orderByYear = movies =>
-    movies.sort((a, b) => {
-        if (a.year > b.year) return 1;
-        if (a.year < b.year) return -1;
-        if (a.title > b.title) return 1;
-        else return -1;
+const orderByYear = array =>
+    array.sort((after, before) => {
+        if (after.year > before.year) return 1;
+        if (after.year < before.year) return -1;
+        if (after.year == before.year) {
+            if (after.title > before.title) return 1;
+            if (after.title < before.title) return -1;
+        }
     });
 
 // Iteración 2
-const howManyMovies = movies =>
-    movies.filter(
-        movie =>
-        movie.director === "Steven Spielberg" && movie.genre.includes("Drama")
+const howManyMovies = array =>
+    array.filter(
+        element =>
+            element.genre.includes("Drama") &&
+            element.director === "Steven Spielberg"
     ).length;
 
 // Iteración 3
-const orderAlphabetically = (movies) =>
-    movies
-        .sort(function (a, b) {
-            if (a.title > b.title) {
-            return 1;
-            }
-            if (a.title < b.title) {
-            return -1;
-            }
-            // a must be equal to b
-            return 0;
-        })
-        .map((movie, i) => movie.title)
-        .filter((e, index )=> index < 20)
-        
+const orderAlphabetically = array => {
+    const moviesSelected = array.sort((after, before) => {
+        if (after.title > before.title) return 1;
+        if (after.title < before.title) return -1;
+        else return 0;
+    });
+    const moviesTitle = moviesSelected.slice(0, 20).map(element => {
+        return element.title;
+    });
+    console.log(moviesTitle);
+    return moviesTitle;
+};
 
 // Iteración 4
-const ratesAverage = (movies)=> {
-
-    // Si no hay películas, devuelve 0
-    if(!movies.length) return 0
-    // realizamos el sumatorio de las películas
-    const summation = movies.reduce((acc, movie)=> {
-        if(!movie || !movie.rate || movie.rate === "") return acc
-        return acc + movie.rate
-    }, 0)
-    // Realizamos la media
-   const avr = summation / movies.length
-
-   // parseamos el resultado y lo redondeamos a 2 decimales
-   return  parseFloat(avr.toFixed(2))
-}
+const ratesAverage = array => {
+    if (array.length == 0) return 0;
+    const moviesTotalScore = array.reduce((total, element) => {
+        if (!element.rate) return total;
+        return total + element.rate;
+    }, 0);
+    return parseFloat((moviesTotalScore / array.length).toFixed(2));
+};
 
 // Iteración 5
-const dramaMoviesRate = (movies) => {
-    // filtro de las películas que incluyen "Drama"
-    const dramaMovies = movies.filter((movie)=> movie.genre.includes("Drama"))
-    // Si no hay ninguna película, devuelve 0
-    if(!dramaMovies.length) return 0
-    // Realizamos la media de las películas obtenidas
+const dramaMoviesRate = array => {
+    const dramaMovies = array.filter(element =>
+        element.genre.includes("Drama")
+    );
+    if (dramaMovies.length == 0) return 0;
+    const moviesTotalScore = dramaMovies.reduce((total, element) => {
+        if (!element.rate) return total;
+        return total + element.rate;
+    }, 0);
+    return parseFloat((moviesTotalScore / dramaMovies.length).toFixed(2));
+};
 
-    const summation = dramaMovies.reduce((acc, movie) => {
-        if(!movie || !movie.rate || movie.rate === "") return acc
-        return acc + movie.rate
-    }, 0)
-    const avr = summation / dramaMovies.length
-    // parseamos el resultado y devolvemos solo dos decimales
-    return parseFloat(avr.toFixed(2))
-}
+//BONUS.
 
-//BONUS. 
-const bestYearAvg = (movies) => {
-
-    if (!movies.length) return null
-
-    // Recojo todos los años de las películas:
-    const years = movies.map(movie => movie.year)
-    // Elimino las películas repetidas del array:
-    const yearsNoRepeated = [...new Set(years)]
-    // Hago la media de las películas por año
-    const everyAvarageMoviesByYear = yearsNoRepeated.map(year => {
-        // Busco todas las películas que correspondan con un determinado año
-        const movieByYear = movies.filter(movie => movie.year === year)
-        // Hago la media de la puntuación de cada año
-        const summation = movieByYear.reduce((acc, movie) => {
-            if(!movie || !movie.rate || movie === "") return acc.rate
-            return acc + movie.rate
-        }, 0)  
-        const avr = summation / movieByYear.length
-        //Devuelvo un objeto con el año y la media correspondiente
-        return { year, rate: avr}
-
-    })
-    // Ordeno el array  de películas de mayor a menos por media
-    const sortedRatesByYear = everyAvarageMoviesByYear.sort((a,b)=>{
-        if (a.rate < b.rate) return 1;
-        if (a.rate > b.rate) return -1;
-        if (a.yeat < b.year) return 1;
-        else return -1;
-    })
-
-    // devuelvo el primer elemento del array con el año y la media correspondiente
-    return `The best year was ${sortedRatesByYear[0].year} with an average rate of ${sortedRatesByYear[0].rate}` 
-}
+const bestYearAvg = array => {
+    if (array.length == 0) return null;
+    const moviesOrderedByRate = array.sort((after, before) => {
+        if (after.rate > before.rate) return 1;
+        if (after.rate < before.rate) return -1;
+        else return 0;
+    });
+    const moviesTotalScore = moviesOrderedByRate.reduce((total, element) => {
+        if (!element.rate) return total;
+        return total + element.rate;
+    }, 0);
+    const average = parseFloat(
+        (moviesTotalScore / moviesOrderedByRate.length).toFixed(1)
+    );
+    return `The best year was ${moviesOrderedByRate[0].year} with an average rate of ${average}`;
+};
